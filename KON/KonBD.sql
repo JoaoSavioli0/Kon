@@ -14,6 +14,8 @@ EMAIL VARCHAR(45) NOT NULL,
 UF VARCHAR(2) NOT NULL,
 TIPO VARCHAR(20) default 'usuario',
 NOME_USUARIO varchar(50) NOT NULL,
+INTERACAO_1 date,
+INTERACAO_2 date,
 
 primary key(ID)
 );
@@ -21,13 +23,14 @@ primary key(ID)
 CREATE TABLE SOLICITACAO(
 ID INT not null,
 ID_USUARIO INT NOT NULL,
-TITULO VARCHAR(45),
+TITULO VARCHAR(65),
 BAIRRO VARCHAR(30),
-DESCRICAO VARCHAR(150),
+DESCRICAO VARCHAR(500),
 NUM_LIKES INT DEFAULT 0,
 DATA_ABERTURA TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 DATA_CONCLUSAO datetime,
 STATUS_SOLICITACAO varchar(12) default 'aberto',
+ANONIMO int default 0,
 
 
 PRIMARY KEY (ID),
@@ -59,20 +62,20 @@ CREATE TABLE USUARIO_SOLICITACAO_LIKE (
 
 #usuarios.add
 DELIMITER $
-CREATE PROCEDURE add_usuario(p_id_usuario int, p_nome varchar(60), p_bairro varchar(30), p_cidade varchar(30), p_uf varchar(2), p_cpf varchar(14), p_senha varchar(20), p_telefone varchar(15), p_email varchar(45), p_nome_user varchar(50))
+CREATE PROCEDURE add_usuario(p_id_usuario int, p_nome varchar(60), p_bairro varchar(30), p_cidade varchar(30), p_uf varchar(2), p_cpf varchar(14), p_senha varchar(20), p_telefone varchar(15), p_email varchar(45), p_nome_user varchar(50), p_tipo varchar(20))
 BEGIN
-INSERT INTO USUARIO(id, nome, bairro, cidade, uf, cpf, senha, telefone, email, nome_usuario) 
-VALUES(p_id_usuario, p_nome, p_bairro, p_cidade, p_uf, p_cpf, p_senha, p_telefone, p_email, p_nome_user);
+INSERT INTO USUARIO(id, nome, bairro, cidade, uf, cpf, senha, telefone, email, nome_usuario, tipo) 
+VALUES(p_id_usuario, p_nome, p_bairro, p_cidade, p_uf, p_cpf, p_senha, p_telefone, p_email, p_nome_user, p_tipo);
 END$
 DELIMITER ;
 
 
 #usuario.addSolicitacao
 DELIMITER $
-CREATE PROCEDURE add_solicitacao(p_id_solicitacao int, p_id_usuario int, p_titulo varchar(45), p_descricao varchar(150), p_bairro varchar(30))
+CREATE PROCEDURE add_solicitacao(p_id_solicitacao int, p_id_usuario int, p_titulo varchar(65), p_descricao varchar(500), p_bairro varchar(30), p_anonimo int)
 BEGIN
-INSERT INTO solicitacao(id, id_usuario, titulo, descricao, bairro) 
-VALUES (p_id_solicitacao, p_id_usuario, p_titulo, p_descricao, p_bairro);
+INSERT INTO solicitacao(id, id_usuario, titulo, descricao, bairro, anonimo) 
+VALUES (p_id_solicitacao, p_id_usuario, p_titulo, p_descricao, p_bairro, p_anonimo);
 END$
 DELIMITER ;
 
@@ -109,6 +112,8 @@ BEGIN
 SELECT * FROM usuario u WHERE u.cpf = p_cpf;
 END$
 DELIMITER ;
+
+SELECT * FROM SOLICITACAO WHERE TITULO LIKE '%a%' OR DESCRICAO LIKE '%a%';
 
 
 #solicitacoes.exibeSolicitacoes por bairro
@@ -150,12 +155,10 @@ DELIMITER ;
 DELIMITER $
 CREATE PROCEDURE solicitacao_comentarios(p_id_solicitacao int)
 BEGIN
-SELECT u.nome_usuario, c.texto FROM comentario c
-INNER JOIN usuario u on u.id = c.id_usuario
+SELECT * FROM comentario c
 where c.id_solicitacao = p_id_solicitacao;
 END $
 DELIMITER ;
-
 
 #Exibe numero de comentarios solicitação
 DELIMITER $
@@ -233,19 +236,33 @@ FROM solicitacao s
 group by(s.bairro)
 order by count(s.id) desc;
 
+DELIMITER $
+CREATE TRIGGER data_fechamento_solicitacao 
+BEFORE UPDATE ON solicitacao
+FOR EACH ROW
+BEGIN
+IF NEW.status_solicitacao = 'fechado' THEN
+        SET NEW.data_conclusao = SYSDATE();
+    END IF;
+END $
+DELIMITER ; 
+
 select * from r_quant_solicitacoes_bairros;
 
 select * from usuario;
 
 select * from solicitacao;
 
-select * from comentario;
+select * from usuario_solicitacao_like;
 
+select * from comentario;
 
 
 select max(id) from usuario;
 select max(id) from solicitacao;
 
 drop database kon;
+
+SELECT id_solicitacao FROM usuario_solicitacao_like where ID_USUARIO = 2;
 
 

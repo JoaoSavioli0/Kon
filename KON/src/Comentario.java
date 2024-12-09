@@ -2,22 +2,26 @@
 
 public class Comentario {
     Id id = new Id();
+    usuarioDAO usuarioDAO = new usuarioDAO<>();
 
     private String comentario;
 
     private int idComentario;
     private int idSolicitacao;
     private int idUsuario;
+
+    private String nomeUsuarioComentario;
     
-    public Comentario(String comentario, int idSolicitacao, int idUsuario){
+    public Comentario(int idComentario, String comentario, int idSolicitacao, int idUsuario){
         this.comentario = comentario;
-        this.idComentario = id.generateIdComentario();
+        this.idComentario = idComentario == 0 ? id.generateIdComentario() : idComentario;
         this.idSolicitacao = idSolicitacao;
         this.idUsuario = idUsuario;
+        this.nomeUsuarioComentario = usuarioDAO.buscaPorId(idUsuario).getNomeUser();
     }
 
     public String toString(){
-        return this.comentario;
+        return "\n" + this.nomeUsuarioComentario + "\n" + this.comentario;
     }
 
 

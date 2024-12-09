@@ -1,34 +1,47 @@
 
 public class Solicitacao {
     Id idGenerator = new Id();
+    usuarioDAO usuarioDAO = new usuarioDAO();
 
     private int idSolicitacao;
+
     private String tituloSolicitacao;
     private String descricaoSolicitacao;
     private String bairroSolicitacao;
+    private String nomeUsuarioSolicitacao;
 
     private String dataAbertura;
     private String dataConclusao;
 
     private String status;
+    private int anonimo;
 
     private int numLikes;
     private int numComentarios;
 
     private int idUsuario;
 
-    public Solicitacao(String tituloSolicitacao, String descricaoSolicitacao, String bairroSolicitacao, int idUsuario) {
+    public Solicitacao(String tituloSolicitacao, String descricaoSolicitacao, String bairroSolicitacao, int idUsuario, int anonimo) {
         this.tituloSolicitacao = tituloSolicitacao;
         this.descricaoSolicitacao = descricaoSolicitacao;
         this.bairroSolicitacao = bairroSolicitacao;
         this.idUsuario = idUsuario;
+        this.nomeUsuarioSolicitacao = usuarioDAO.buscaPorId(idUsuario).getNomeUser();
         this.idSolicitacao = idGenerator.generateIdSolicitacao();
+        this.anonimo = anonimo;
     }
 
     public String toString() {
-        return "\nUsuario: " + this.idUsuario + "\nBairro: " + this.bairroSolicitacao + "\n\n"
+        if (this.getAnonimo() == 0){
+            return "\nUsuario: " + this.nomeUsuarioSolicitacao + "\nBairro: " + this.bairroSolicitacao + "\n\n"
+            + this.tituloSolicitacao + " - " + this.numLikes + " likes "
+            + "\n\n" + this.descricaoSolicitacao + "\n---------------------------";
+        } else{
+            return "\nUsuario: Anônimo\nBairro: " + this.bairroSolicitacao + "\n\n"
                 + this.tituloSolicitacao + " - " + this.numLikes + " likes "
                 + "\n\n" + this.descricaoSolicitacao + "\n---------------------------";
+        }
+        
     }
 
 
@@ -111,8 +124,13 @@ public class Solicitacao {
         this.idUsuario = idUsuario;
     }
 
+    public int getAnonimo() {
+        return anonimo;
+    }
 
-   
+    public void setAnonimo(int anonimo) {
+        this.anonimo = anonimo;
+    }
 
     
 }

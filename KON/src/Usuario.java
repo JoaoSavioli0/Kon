@@ -28,12 +28,12 @@ public class Usuario {
 
     // Funções de Usuário
 
-    public void addSolicitacao(String tituloSolicitacao, String descricaoSolicitacao, String bairroSolicitacao, int idUsuario) {
-        solicitacaoDAO.salvarSolicitacao(new Solicitacao(tituloSolicitacao, descricaoSolicitacao, bairroSolicitacao, idUsuario));
+    public void addSolicitacao(String tituloSolicitacao, String descricaoSolicitacao, String bairroSolicitacao, int idUsuario, int anonimo) {
+        solicitacaoDAO.salvarSolicitacao(new Solicitacao(tituloSolicitacao, descricaoSolicitacao, bairroSolicitacao, idUsuario, anonimo));
     }
 
     public void addComentario(String comentario, int idSolicitacao, int idUsuario){
-        solicitacaoDAO.AdicionaComentario(new Comentario(comentario, idSolicitacao, idUsuario));
+        solicitacaoDAO.AdicionaComentario(new Comentario(0, comentario, idSolicitacao, idUsuario));
     }
 
 
@@ -131,6 +131,14 @@ public class Usuario {
         }else{
             System.out.println("Usuário não tem permissão!\n");
         }
+    }
+
+    public void fechaSolicitacao(String tipoUsuario, int idSolicitacao){
+        if(tipoUsuario.equals("admin")){
+            solicitacaoDAO.fechaSolicitacao(idSolicitacao);
+        }else{
+            System.out.println("Usuário não tem permissão!\n");
+        }     
     }
 
 
